@@ -1,0 +1,14 @@
+# Kompilacja i pliki binarne
+*.o
+*.obj
+*.exe
+*.out
+program
+build/
+bin/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
