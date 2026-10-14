@@ -85,9 +85,3 @@ kontrolowane przez osobny plik testowy; oddawany kod C nadal używa `rand()`.
 - Do czego służy dodatkowe `%c` w `sscanf`?
 - Jak `(n + 2) / 3` wyznacza liczbę rzędów?
 - Dlaczego rzutowanie na `long long` jest przed mnożeniem boków?
-
-## Pomoc AI
-
-Programy, testy i dokumentacja zostały przygotowane z pomocą AI, co zasady
-przedmiotu dopuszczają przy zwykłych zadaniach. Przed oddaniem trzeba uruchomić
-programy samodzielnie i rozumieć kod — podczas rozmów AI nie jest dozwolone.
