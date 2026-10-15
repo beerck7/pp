@@ -1,5 +1,7 @@
 # Podstawy programowania
 
+**Zmiany do akceptacji:** zacznij od [DO_PRZEJRZENIA/README.md](DO_PRZEJRZENIA/README.md). Nowe zmiany trafiają na główną gałąź dopiero po wyraźnej zgodzie właściciela.
+
 Zadanie 1 — wejście/wyjście i instrukcje warunkowe w C.
 Każdy plik to osobny program. Przygotowany jest cały zestaw, bo przekazane
 polecenie nie rozstrzyga, czy na Moodle trzeba oddać również wprawki.
