@@ -4,6 +4,11 @@ Zadanie 1 — wejście/wyjście i instrukcje warunkowe w C.
 Każdy plik to osobny program. Przygotowany jest cały zestaw, bo przekazane
 polecenie nie rozstrzyga, czy na Moodle trzeba oddać również wprawki.
 
+Zadanie 2 — pętle i tablice o stałym rozmiarze: 4 rozgrzewki, monitor ARGO
+oraz 6 wprawek. Lista programów, menu i przyjęte założenia są w
+[zadanie-2/README.md](zadanie-2/README.md). Każdy z 11 plików C kompiluje się osobno.
+Zakres oddawania na Moodle również nie jest rozstrzygnięty w arkuszu zestawu 2.
+
 ## Pliki
 
 `zadanie-1/rozgrzewka/`:
