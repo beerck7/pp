@@ -130,7 +130,7 @@ void display_sensors(const double sensors[], int n) {
     while (i < n) {
         printf("Czujnik nr %d: %.2lf", i + 1, sensors[i]);
 
-        if (sensors[i] < 0 || sensors[i] > 100) {
+        if (sensors[i] > 0 || sensors[i] < 100) {
             printf(" - nieprawidlowy");
         }
 

@@ -106,7 +106,7 @@
 
 // 4. Weryfikacja hasła
 
-// W aplikacji logowania należy sprawdzić, czy podane hasło spełnia określone wymagania.Napisz funkcję: 
+// W aplikacji logowania należy sprawdzić, czy podane hasło spełnia określone wymagania.Napisz funkcję:
 
 // int is_password_valid(const char password[]);
 
@@ -118,7 +118,7 @@
 // zawierać co najmniej jedną cyfrę;
 // zawierać co najmniej jedną wielką literę;
 // zawierać co najmniej jeden znak specjalny, np. !, @, #, $, %.
- 
+
 // W funkcji main() wczytaj hasło, wywołaj funkcję i wyświetl odpowiedni komunikat.
 
 // Zadbaj o bezpieczne wczytywanie hasła do tablicy znaków, z uwzględnieniem rozmiaru dostępnego bufora.
@@ -186,7 +186,7 @@
 //         printf("Pomiar nr %d wynosi %.2lf\n", i+1, data[i]);
 //         i++;
 //     }
-    
+
 // }
 // void normalize(double data[], int n){
 //     int i =0;
@@ -233,3 +233,4 @@
 //     print_measurements(data,5);
 //     return 0;
 // }
+
