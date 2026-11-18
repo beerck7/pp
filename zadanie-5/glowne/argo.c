@@ -41,9 +41,17 @@ int add_event(event_log *log, event_type type, event_data data){
     if(type == LOGIN_FAILURE && data.attempts < 0){
         return 0;
     }
-    if(type == DIAGNOSTIC &&
-       (data.text[0] == '\0' || memchr(data.text, '\0', TEXT_SIZE) == NULL)){
-        return 0;
+    if(type == DIAGNOSTIC){
+        int i = 0;
+        if(data.text[0] == '\0'){
+            return 0;
+        }
+        while(i < TEXT_SIZE && data.text[i] != '\0'){
+            i++;
+        }
+        if(i == TEXT_SIZE){
+            return 0;
+        }
     }
 
     log->events[log->count].id = log->count + 1;
@@ -137,21 +145,23 @@ void report(const event_log *log){
     double max_temperature = 0;
 
     while(i < log->count){
-        const event *item = &log->events[i];
-        if(item->type == TEMPERATURE){
-            if(temperatures == 0 || item->data.temperature > max_temperature){
-                max_temperature = item->data.temperature;
+        if(log->events[i].type == TEMPERATURE){
+            if(temperatures == 0){
+                max_temperature = log->events[i].data.temperature;
+            }
+            else if(log->events[i].data.temperature > max_temperature){
+                max_temperature = log->events[i].data.temperature;
             }
             temperatures++;
         }
-        else if(item->type == LOGIN_FAILURE){
+        else if(log->events[i].type == LOGIN_FAILURE){
             logins++;
-            attempts += item->data.attempts;
+            attempts += log->events[i].data.attempts;
         }
-        else if(item->type == DIAGNOSTIC){
+        else if(log->events[i].type == DIAGNOSTIC){
             messages++;
         }
-        if(is_dangerous(item)){
+        if(is_dangerous(&log->events[i])){
             threats++;
         }
         i++;
