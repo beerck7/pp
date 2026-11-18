@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include <math.h>
-#include <string.h>
+#include <float.h>
 
 #define MAX_EVENTS 100
 #define TEXT_SIZE 100
@@ -35,15 +34,22 @@ int add_event(event_log *log, event_type type, event_data data){
     if(type != TEMPERATURE && type != LOGIN_FAILURE && type != DIAGNOSTIC){
         return 0;
     }
-    if(type == TEMPERATURE && !isfinite(data.temperature)){
+    if(type == TEMPERATURE && !(data.temperature >= -DBL_MAX && data.temperature <= DBL_MAX)){
         return 0;
     }
     if(type == LOGIN_FAILURE && data.attempts < 0){
         return 0;
     }
-    if(type == DIAGNOSTIC &&
-       (data.text[0] == '\0' || memchr(data.text, '\0', TEXT_SIZE) == NULL)){
-        return 0;
+    if(type == DIAGNOSTIC){
+        int i = 0;
+
+        while(i < TEXT_SIZE && data.text[i] != '\0'){
+            i++;
+        }
+
+        if(i == 0 || i == TEXT_SIZE){
+            return 0;
+        }
     }
 
     log->events[log->count].id = log->count + 1;
@@ -54,7 +60,7 @@ int add_event(event_log *log, event_type type, event_data data){
 }
 
 void print_event(const event *item){
-    printf("ID %d: ", item->id);
+    printf("id %d: ", item->id);
     switch(item->type){
         case TEMPERATURE:
             printf("Temperatura: %.2f C\n", item->data.temperature);
@@ -71,38 +77,33 @@ void print_event(const event *item){
 }
 
 void print_all(const event_log *log){
-    int i = 0;
     if(log->count == 0){
-        printf("Rejestr jest pusty.\n");
+        printf("Rejestr jest pusty\n");
     }
-    while(i < log->count){
+    for(int i = 0; i < log->count; i++){
         print_event(&log->events[i]);
-        i++;
     }
 }
 
 void find_type(const event_log *log, event_type type){
-    int i = 0, found = 0;
-    while(i < log->count){
+    int found = 0;
+    for(int i = 0; i < log->count; i++){
         if(log->events[i].type == type){
             print_event(&log->events[i]);
             found = 1;
         }
-        i++;
     }
     if(!found){
-        printf("Nie znaleziono zdarzen tego rodzaju.\n");
+        printf("Nie znaleziono zdarzen tego rodzaju\n");
     }
 }
 
 void find_id(const event_log *log, int id){
-    int i = 0;
-    while(i < log->count){
+    for(int i = 0; i < log->count; i++){
         if(log->events[i].id == id){
             print_event(&log->events[i]);
             return;
         }
-        i++;
     }
     printf("Nie znaleziono zdarzenia o ID %d.\n", id);
 }
@@ -118,25 +119,24 @@ int is_dangerous(const event *item){
 }
 
 void print_threats(const event_log *log){
-    int i = 0, found = 0;
-    while(i < log->count){
+    int found = 0;
+    for(int i = 0; i < log->count; i++){
         if(is_dangerous(&log->events[i])){
             print_event(&log->events[i]);
             found = 1;
         }
-        i++;
     }
     if(!found){
-        printf("Brak zagrozen.\n");
+        printf("Brak zagrozen\n");
     }
 }
 
 void report(const event_log *log){
-    int i = 0, temperatures = 0, logins = 0, messages = 0, threats = 0;
+    int temperatures = 0, logins = 0, messages = 0, threats = 0;
     long long attempts = 0;
     double max_temperature = 0;
 
-    while(i < log->count){
+    for(int i = 0; i < log->count; i++){
         const event *item = &log->events[i];
         if(item->type == TEMPERATURE){
             if(temperatures == 0 || item->data.temperature > max_temperature){
@@ -154,7 +154,6 @@ void report(const event_log *log){
         if(is_dangerous(item)){
             threats++;
         }
-        i++;
     }
     printf("Wszystkie zdarzenia: %d\n", log->count);
     printf("Temperatury: %d, logowania: %d, komunikaty: %d\n", temperatures, logins, messages);
@@ -162,7 +161,7 @@ void report(const event_log *log){
         printf("Najwyzsza temperatura: %.2f C\n", max_temperature);
     }
     else{
-        printf("Brak pomiarow temperatury.\n");
+        printf("Brak pomiarow temperatury\n");
     }
     printf("Suma nieudanych prob: %lld\n", attempts);
     printf("Liczba zagrozen: %d\n", threats);
@@ -171,9 +170,12 @@ void report(const event_log *log){
 int main(){
     event_log log = {0};
     event_data data;
+    char komunikat[] = "Sprawdzic modul zasilania";
 
-    printf("=== Pusty rejestr ===\n");
+    printf("Pusty rejestr\n");
     print_all(&log);
+    find_type(&log, DIAGNOSTIC);
+    print_threats(&log);
     report(&log);
 
     data.temperature = 100;
@@ -184,22 +186,27 @@ int main(){
     add_event(&log, LOGIN_FAILURE, data);
     data.attempts = 3;
     add_event(&log, LOGIN_FAILURE, data);
-    strcpy(data.text, "Sprawdzic modul zasilania");
+    int i = 0;
+    while(komunikat[i] != '\0'){
+        data.text[i] = komunikat[i];
+        i++;
+    }
+    data.text[i] = '\0';
     add_event(&log, DIAGNOSTIC, data);
 
-    printf("\n=== Wszystkie zdarzenia ===\n");
+    printf("\nWszystkie zdarzenia\n");
     print_all(&log);
-    printf("\n=== Temperatury ===\n");
+    printf("\nTemperatury\n");
     find_type(&log, TEMPERATURE);
-    printf("\n=== Wyszukiwanie ID 5 i 99 ===\n");
+    printf("\nWyszukiwanie ID 5 i 99\n");
     find_id(&log, 5);
     find_id(&log, 99);
-    printf("\n=== Zagrozenia ===\n");
+    printf("\nZagrozenia\n");
     print_threats(&log);
-    printf("\n=== Raport ===\n");
+    printf("\nRaport\n");
     report(&log);
 
-    printf("\n=== Niepoprawne dane ===\n");
+    printf("\nNiepoprawne dane\n");
     data.attempts = -1;
     if(!add_event(&log, LOGIN_FAILURE, data)){
         printf("Odrzucono ujemna liczbe prob.\n");
@@ -207,24 +214,29 @@ int main(){
     if(!add_event(&log, (event_type)99, data)){
         printf("Odrzucono nieznany rodzaj.\n");
     }
-    data.temperature = NAN;
-    if(!add_event(&log, TEMPERATURE, data)){
-        printf("Odrzucono niepoprawna temperature.\n");
-    }
     data.text[0] = '\0';
     if(!add_event(&log, DIAGNOSTIC, data)){
         printf("Odrzucono pusty komunikat.\n");
     }
+    for(int i = 0; i < TEXT_SIZE; i++){
+        data.text[i] = 'A';
+    }
+    if(!add_event(&log, DIAGNOSTIC, data)){
+        printf("Odrzucono za dlugi komunikat.\n");
+    }
     printf("Rejestr po odrzuceniu wpisow:\n");
     print_all(&log);
 
-    printf("\n=== Test pelnego rejestru ===\n");
+    printf("\nTest pelnego rejestru\n");
     data.attempts = 0;
     while(log.count < MAX_EVENTS){
         add_event(&log, LOGIN_FAILURE, data);
     }
     if(!add_event(&log, LOGIN_FAILURE, data)){
-        printf("Odrzucono wpis: rejestr jest pelny (%d zdarzen).\n", log.count);
+        printf("Odrzucono wpis rejestr jest pelny (%d zdarzen)\n", log.count);
     }
+
+    // printf("\nRejestr koncowy\n");
+    // print_all(&log);
     return 0;
 }
