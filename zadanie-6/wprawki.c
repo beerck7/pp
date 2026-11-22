@@ -254,9 +254,15 @@
 //     printf("\nTablica po zmiejszeniu\n");
 
 //     int *tab2 = realloc(tab1, 4*sizeof(int));
+//     if(tab2 == NULL){
+//         printf("Nie udalo sie zmniejszyc tablicy.\n");
+//         free(tab1);
+//         return 1;
+//     }
+//     tab1 = tab2;
 
 //     for(int i=0;i<4;i++){
-//         printf("%d ", tab2[i]);
+//         printf("%d ", tab1[i]);
 //     }
 //     free(tab1);
 //     tab1=NULL;
