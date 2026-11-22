@@ -90,3 +90,12 @@
 // Co się stanie, jeśli usuniemy instrukcję free(result)?
 // Czy można wywołać free(&local)? Uzasadnij odpowiedź.
 // Jaką rolę pełni instrukcja result = NULL?
+
+// Odpowiedzi (typowy podzial pamieci):
+// global_counter i count maja statyczny czas zycia (obszar danych).
+// local, result i p sa zmiennymi lokalnymi, zwykle na stosie.
+// malloc przydziela osobny obszar pamieci dynamicznej (sterte).
+// Po koncu create_value znika p, ale przydzielona pamiec zostaje az do free.
+// Bez free tracimy dostep do pamieci: to wyciek pamieci.
+// free(&local) jest niepoprawne: local nie zostala przydzielona przez malloc.
+// result = NULL usuwa nieaktualny adres ze wskaznika po zwolnieniu pamieci.
