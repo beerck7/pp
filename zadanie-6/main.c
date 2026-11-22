@@ -65,6 +65,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
+#include <stdint.h>
+#include <math.h>
+
+/* Pozwala sprawdzic zachowanie przy niepowodzeniu alokacji. */
+int test_bledu_alokacji = 0;
 
 typedef struct{
     int id;
@@ -81,17 +87,28 @@ typedef struct{
 } Rejestr;
 
 int dodaj(Rejestr *r, int modul, int zagrozenie, double pomiar){
-    if(modul <= 0 || zagrozenie < 0 || zagrozenie > 3){
+    if(modul <= 0 || zagrozenie < 0 || zagrozenie > 3 || !isfinite(pomiar)){
         printf("Niepoprawne dane.\n");
         return 0;
     }
 
+    if(r->kolejne_id == INT_MAX){
+        printf("Brak dostepnych identyfikatorow.\n");
+        return 0;
+    }
+
     if(r->liczba == r->pojemnosc){
+        if(r->pojemnosc > INT_MAX / 2 ||
+           (size_t)r->pojemnosc > SIZE_MAX / sizeof(Event) / 2){
+            printf("Rejestr jest zbyt duzy.\n");
+            return 0;
+        }
         int nowa_pojemnosc = r->pojemnosc * 2;
 
-        Event *nowa = realloc(
-            r->tab, nowa_pojemnosc * sizeof(Event)
-        );
+        Event *nowa = NULL;
+        if(!test_bledu_alokacji){
+            nowa = realloc(r->tab, (size_t)nowa_pojemnosc * sizeof(Event));
+        }
 
         if(nowa == NULL){
             printf("Nie udalo sie powiekszyc rejestru.\n");
@@ -253,6 +270,13 @@ int main(){
 
     dodaj(&r, 1, 0, 20);
     dodaj(&r, 2, 1, 45);
+    printf("\n=== TEST BLEDU ALOKACJI ===\n");
+    test_bledu_alokacji = 1;
+    if(!dodaj(&r, 3, 2, 70)){
+        printf("Wpis nie zostal dodany. Wczesniejsze dane:\n");
+        pokaz_wszystkie(&r);
+    }
+    test_bledu_alokacji = 0;
     dodaj(&r, 3, 2, 70);
     dodaj(&r, 1, 3, 110);
     dodaj(&r, 2, 1, 55);
