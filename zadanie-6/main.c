@@ -65,9 +65,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
-#include <stdint.h>
-#include <math.h>
 
 /* Pozwala sprawdzic zachowanie przy niepowodzeniu alokacji. */
 int test_bledu_alokacji = 0;
@@ -87,19 +84,20 @@ typedef struct{
 } Rejestr;
 
 int dodaj(Rejestr *r, int modul, int zagrozenie, double pomiar){
-    if(modul <= 0 || zagrozenie < 0 || zagrozenie > 3 || !isfinite(pomiar)){
+    /* Przyjete granice techniczne dla przykladowego programu. */
+    if(modul <= 0 || zagrozenie < 0 || zagrozenie > 3 ||
+       !(pomiar >= -1000000 && pomiar <= 1000000)){
         printf("Niepoprawne dane.\n");
         return 0;
     }
 
-    if(r->kolejne_id == INT_MAX){
+    if(r->kolejne_id > 1000000){
         printf("Brak dostepnych identyfikatorow.\n");
         return 0;
     }
 
     if(r->liczba == r->pojemnosc){
-        if(r->pojemnosc > INT_MAX / 2 ||
-           (size_t)r->pojemnosc > SIZE_MAX / sizeof(Event) / 2){
+        if(r->pojemnosc >= 32768){
             printf("Rejestr jest zbyt duzy.\n");
             return 0;
         }
