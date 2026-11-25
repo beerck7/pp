@@ -66,7 +66,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Pozwala sprawdzic zachowanie przy niepowodzeniu alokacji. */
 int test_bledu_alokacji = 0;
 
 typedef struct{
@@ -84,9 +83,8 @@ typedef struct{
 } Rejestr;
 
 int dodaj(Rejestr *r, int modul, int zagrozenie, double pomiar){
-    /* Przyjete granice techniczne dla przykladowego programu. */
-    if(modul <= 0 || zagrozenie < 0 || zagrozenie > 3 ||
-       !(pomiar >= -1000000 && pomiar <= 1000000)){
+    /* przykladowe granice zakresu danych dla programu. */
+    if(modul <= 0 || zagrozenie < 0 || zagrozenie > 3 || !(pomiar >= -1000000 && pomiar <= 1000000)){
         printf("Niepoprawne dane.\n");
         return 0;
     }
@@ -133,8 +131,7 @@ int dodaj(Rejestr *r, int modul, int zagrozenie, double pomiar){
 }
 
 void pokaz_jedno(const Event *e){
-    printf("ID: %d, modul: %d, zagrozenie: %d, pomiar: %.2f\n",
-           e->id, e->modul, e->zagrozenie, e->pomiar);
+    printf("ID: %d, modul: %d, zagrozenie: %d, pomiar: %.2f\n", e->id, e->modul, e->zagrozenie, e->pomiar);
 }
 
 void pokaz_wszystkie(const Rejestr *r){
@@ -243,8 +240,7 @@ void raport(const Rejestr *r, int modul){
 
     printf("Srednia pomiarow: %.2f\n", suma / r->liczba);
     printf("ID najwyzszego pomiaru: %d\n", r->tab[indeks_max].id);
-    printf("Liczba zdarzen z modulu %d: %d\n",
-           modul, liczba_modulu);
+    printf("Liczba zdarzen z modulu %d: %d\n", modul, liczba_modulu);
 }
 
 int main(){
@@ -253,22 +249,22 @@ int main(){
     r.liczba = 0;
     r.pojemnosc = 2;
     r.kolejne_id = 1;
-    r.tab = malloc(r.pojemnosc * sizeof(Event));
+    r.tab = malloc((size_t)r.pojemnosc * sizeof(Event));
 
     if(r.tab == NULL){
         printf("Nie udalo sie utworzyc rejestru.\n");
         return 1;
     }
 
-    printf("=== PUSTY REJESTR ===\n");
+    printf("PUSTY REJESTR\n");
     pokaz_wszystkie(&r);
     raport(&r, 1);
 
-    printf("\n=== DODAWANIE ZDARZEN ===\n");
+    printf("\nDODAWANIE ZDARZEN\n");
 
     dodaj(&r, 1, 0, 20);
     dodaj(&r, 2, 1, 45);
-    printf("\n=== TEST BLEDU ALOKACJI ===\n");
+    printf("\nTEST BLEDU ALOKACJI\n");
     test_bledu_alokacji = 1;
     if(!dodaj(&r, 3, 2, 70)){
         printf("Wpis nie zostal dodany. Wczesniejsze dane:\n");
@@ -282,24 +278,24 @@ int main(){
 
     pokaz_wszystkie(&r);
 
-    printf("\n=== SZUKANIE PO ID ===\n");
+    printf("\nSZUKANIE PO ID\n");
     szukaj_id(&r, 3);
     szukaj_id(&r, 99);
 
-    printf("\n=== ZDARZENIA MODULU 1 ===\n");
+    printf("\nZDARZENIA MODULU 1\n");
     szukaj_modulu(&r, 1);
 
-    printf("\n=== ZAGROZENIE POZIOMU 2 ===\n");
+    printf("\nZAGROZENIE POZIOMU 2\n");
     szukaj_zagrozenia(&r, 2);
 
-    printf("\n=== RAPORT ===\n");
+    printf("\nRAPORT\n");
     raport(&r, 1);
 
-    printf("\n=== NIEPOPRAWNE DANE ===\n");
+    printf("\nNIEPOPRAWNE DANE\n");
     dodaj(&r, 1, 5, 30);
     dodaj(&r, 0, 1, 30);
 
-    printf("\n=== USUWANIE ===\n");
+    printf("\nUSUWANIE\n");
 
     if(usun(&r, 1)){
         printf("Usunieto pierwsze zdarzenie: ID 1.\n");
@@ -317,14 +313,14 @@ int main(){
         printf("Nie znaleziono ID 99.\n");
     }
 
-    printf("\n=== REJESTR PO USUNIECIU ===\n");
+    printf("\nREJESTR PO USUNIECIU\n");
     pokaz_wszystkie(&r);
 
-    printf("\n=== DODANIE PO USUNIECIU ===\n");
+    printf("\nDODANIE PO USUNIECIU\n");
     dodaj(&r, 3, 3, 95);
     pokaz_wszystkie(&r);
 
-    printf("\n=== RAPORT KONCOWY ===\n");
+    printf("\nRAPORT KONCOWY\n");
     raport(&r, 1);
 
     free(r.tab);
